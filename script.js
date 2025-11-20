@@ -1,10 +1,14 @@
 function Gameboard() {
   const ROWS = 3;
   const COLS = 3;
+  const board = [];
 
-  const board = Array.from({ length: ROWS }, () =>
-    new Array(COLS).fill(Cell())
-  );
+  for (let i = 0; i < ROWS; i++) {
+    board[i] = [];
+    for (let j = 0; j < COLS; j++) {
+      board[i].push(Cell());
+    }
+  }
 
   const markSpot = (row, col, tokenVal) => {
     const rowInvalid = row < 0 || row >= ROWS;
@@ -48,20 +52,24 @@ function Gameboard() {
     }
 
     // Check main diagonal
+    // We set it up this way because formatting error
+    // (board[0][0].getValue() === board[1][1].getValue()) === board[2][2].getValue()
+    const mainDiagonalA = board[0][0].getValue();
+    const sharedDiagonal = board[1][1].getValue();
+    const mainDiagonalC = board[2][2].getValue();
+
     if (
-      board[0][0].getValue() !== "" &&
-      (board[0][0].getValue() === board[1][1].getValue()) ===
-        board[2][2].getValue()
+      mainDiagonalA !== "" &&
+      mainDiagonalA === sharedDiagonal &&
+      sharedDiagonal === mainDiagonalC
     )
       return true;
 
-    // Check anti-diagonal
-    if (
-      board[0][2].getValue() !== "" &&
-      (board[0][2].getValue() === board[1][1].getValue()) ===
-        board[2][0].getValue()
-    )
-      return true;
+    // Check anti diagonal
+    const antiDiagonalA = board[0][2].getValue()
+    const antiDiagonalC = board[2][0].getValue()
+
+    if (antiDiagonalA !== '' && antiDiagonalA === sharedDiagonal && sharedDiagonal === antiDiagonalC) return true;
   };
 
   const checkTie = () => {
@@ -165,7 +173,8 @@ function GameController() {
 
 const game = GameController();
 game.playRound(0, 0); // Kevins turn
-game.playRound(0, 1); // Opps turn
-game.playRound(1, 1); // Kevins turn
 game.playRound(1, 0); // Opps turn
+game.playRound(1, 1); // Kevins turn
+game.playRound(1, 2); // Opps turn
 game.playRound(2, 2); // Kevins turn
+
