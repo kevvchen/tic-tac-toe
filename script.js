@@ -34,8 +34,8 @@ function Gameboard() {
     for (let i = 0; i < ROWS; i++) {
       if (
         board[i][0].getValue() !== "" &&
-        (board[i][0].getValue() === board[i][1].getValue()) ===
-          board[i][2].getValue()
+        board[i][0].getValue() === board[i][1].getValue() &&
+        board[i][1].getValue() === board[i][2].getValue()
       ) {
         return true;
       }
@@ -44,8 +44,8 @@ function Gameboard() {
     for (let j = 0; j < COLS; j++) {
       if (
         board[0][j].getValue() !== "" &&
-        (board[0][j].getValue() === board[1][j].getValue()) ===
-          board[2][j].getValue()
+        board[0][j].getValue() === board[1][j].getValue() &&
+        board[1][j].getValue() === board[2][j].getValue()
       ) {
         return true;
       }
@@ -66,10 +66,15 @@ function Gameboard() {
       return true;
 
     // Check anti diagonal
-    const antiDiagonalA = board[0][2].getValue()
-    const antiDiagonalC = board[2][0].getValue()
+    const antiDiagonalA = board[0][2].getValue();
+    const antiDiagonalC = board[2][0].getValue();
 
-    if (antiDiagonalA !== '' && antiDiagonalA === sharedDiagonal && sharedDiagonal === antiDiagonalC) return true;
+    if (
+      antiDiagonalA !== "" &&
+      antiDiagonalA === sharedDiagonal &&
+      sharedDiagonal === antiDiagonalC
+    )
+      return true;
   };
 
   const checkTie = () => {
@@ -150,12 +155,14 @@ function GameController() {
 
     // Check for winning condition
     if (board.checkWin()) {
+      board.printBoard()
       console.log(`${getActivePlayer().playerName} has won the game`);
       return;
     }
 
     // Check for tie condition
     if (board.checkTie()) {
+      board.printBoard()
       console.log("No players have won. The game resulted in a tie");
       return;
     }
@@ -172,9 +179,12 @@ function GameController() {
 }
 
 const game = GameController();
-game.playRound(0, 0); // Kevins turn
-game.playRound(1, 0); // Opps turn
-game.playRound(1, 1); // Kevins turn
-game.playRound(1, 2); // Opps turn
-game.playRound(2, 2); // Kevins turn
-
+game.playRound(0,0); // X
+game.playRound(0,1); // O
+game.playRound(0,2); // X
+game.playRound(1,1); // O
+game.playRound(1,0); // X
+game.playRound(1,2); // O
+game.playRound(2,1); // X
+game.playRound(2,0); // O
+game.playRound(2,2); // X
