@@ -81,7 +81,9 @@ function Gameboard() {
     return board.every((row) => row.every((cell) => cell.getValue() !== ""));
   };
 
-  return { markSpot, checkWin, checkTie, printBoard };
+  const getBoard = () => board;
+
+  return { markSpot, checkWin, checkTie, printBoard, getBoard };
 }
 
 /*
@@ -155,14 +157,14 @@ function GameController() {
 
     // Check for winning condition
     if (board.checkWin()) {
-      board.printBoard()
+      board.printBoard();
       console.log(`${getActivePlayer().playerName} has won the game`);
       return;
     }
 
     // Check for tie condition
     if (board.checkTie()) {
-      board.printBoard()
+      board.printBoard();
       console.log("No players have won. The game resulted in a tie");
       return;
     }
@@ -175,16 +177,27 @@ function GameController() {
   // Initial game message
   printNewRound();
 
-  return { playRound };
+  return { playRound, getBoard: board.getBoard };
 }
 
-const game = GameController();
-game.playRound(0,0); // X
-game.playRound(0,1); // O
-game.playRound(0,2); // X
-game.playRound(1,1); // O
-game.playRound(1,0); // X
-game.playRound(1,2); // O
-game.playRound(2,1); // X
-game.playRound(2,0); // O
-game.playRound(2,2); // X
+function ScreenController() {
+  const game = GameController();
+  const boardContainer = document.querySelector(".board-container");
+
+  // const board = game.getBoard();
+  const board = [
+    ["X", "X", "X"],
+    ["X", "X", "X"],
+    ["X", "X", "X"],
+  ];
+  board.forEach((row) => {
+    row.forEach((cell) => {
+      const cellButton = document.createElement("button");
+      cellButton.classList.add("cell");
+      cellButton.textContent = cell;
+      boardContainer.appendChild(cellButton);
+    });
+  });
+}
+
+ScreenController();
