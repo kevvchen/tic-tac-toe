@@ -177,27 +177,56 @@ function GameController() {
   // Initial game message
   printNewRound();
 
-  return { playRound, getBoard: board.getBoard };
+  return { playRound, getBoard: board.getBoard, getActivePlayer };
 }
 
 function ScreenController() {
   const game = GameController();
-  const boardContainer = document.querySelector(".board-container");
+  const boardContainerDiv = document.querySelector(".board-container");
+  const playerTurnDiv = document.querySelector(".player-turn");
 
-  // const board = game.getBoard();
-  const board = [
-    ["X", "X", "X"],
-    ["X", "X", "X"],
-    ["X", "X", "X"],
-  ];
-  board.forEach((row) => {
-    row.forEach((cell) => {
-      const cellButton = document.createElement("button");
-      cellButton.classList.add("cell");
-      cellButton.textContent = cell;
-      boardContainer.appendChild(cellButton);
+  const updateScreen = () => {
+    // Clear the board
+    boardContainerDiv.textContent = "";
+
+    // Get the newest version of the board and players turn
+    const board = game.getBoard();
+    const activePlayer = game.getActivePlayer();
+
+    // Display current players turn
+    playerTurnDiv.textContent = `${activePlayer.playerName}'s turn...`;
+
+    // Render the new board on screen
+    board.forEach((row, rowIdx) => {
+      row.forEach((cell, colIdx) => {
+        // Create new DOM nodes and append it as child
+        const cellButton = document.createElement("button");
+        // Adding a class of cell for css access
+        cellButton.classList.add("cell");
+
+        // Used to pass into playRound function
+        cellButton.dataset.row = rowIdx;
+        cellButton.dataset.column = colIdx;
+
+        // Render on screen
+        cellButton.textContent = cell.getValue();
+        boardContainerDiv.appendChild(cellButton);
+      });
     });
-  });
+  };
+
+  // Add event listener for the board
+  function clickHandlerBoard(e) {
+    const selectedRow = e.target.dataset.row;
+    const selectedColumn = e.target.dataset.column;
+
+    game.playRound(selectedRow, selectedColumn);
+    updateScreen();
+  }
+  boardContainerDiv.addEventListener("click", clickHandlerBoard);
+
+  // Initial render
+  updateScreen();
 }
 
 ScreenController();
