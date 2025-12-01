@@ -15,10 +15,12 @@ function Gameboard() {
     const colInvalid = col < 0 || col >= COLS;
 
     // Check if the passed in coordinates are valid
-    if (rowInvalid || colInvalid || board[row][col].getValue() !== "") return;
+    if (rowInvalid || colInvalid || board[row][col].getValue() !== "")
+      return false;
 
     // Can go ahead and mark the cell
     board[row][col].markCell(tokenVal);
+    return true;
   };
 
   // Print our board to the console to see what board looks like after every round of play
@@ -153,25 +155,29 @@ function GameController() {
     );
 
     // Allow the current activePlayer to mark a spot
-    board.markSpot(row, col, getActivePlayer().playerToken);
+    const isMarked = board.markSpot(row, col, getActivePlayer().playerToken);
+
+    if (!isMarked) return false;
 
     // Check for winning condition
     if (board.checkWin()) {
       board.printBoard();
       console.log(`${getActivePlayer().playerName} has won the game`);
-      return;
+      return true;
     }
 
     // Check for tie condition
     if (board.checkTie()) {
       board.printBoard();
       console.log("No players have won. The game resulted in a tie");
-      return;
+      return true;
     }
 
     // Switch player turn
     switchPlayerTurn();
     printNewRound();
+
+    return true;
   };
 
   // Initial game message
@@ -220,7 +226,17 @@ function ScreenController() {
     const selectedRow = e.target.dataset.row;
     const selectedColumn = e.target.dataset.column;
 
-    game.playRound(selectedRow, selectedColumn);
+    if (!selectedRow) return;
+    if (!selectedColumn) return;
+
+    const isMarked = game.playRound(selectedRow, selectedColumn);
+
+    // Check if a cell has already been marked
+    if (!isMarked) {
+      alert("The spot has already been taken");
+      return;
+    }
+
     updateScreen();
   }
   boardContainerDiv.addEventListener("click", clickHandlerBoard);
