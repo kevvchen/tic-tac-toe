@@ -163,14 +163,14 @@ function GameController() {
     if (board.checkWin()) {
       board.printBoard();
       console.log(`${getActivePlayer().playerName} has won the game`);
-      return true;
+      return "win";
     }
 
     // Check for tie condition
     if (board.checkTie()) {
       board.printBoard();
       console.log("No players have won. The game resulted in a tie");
-      return true;
+      return "tie";
     }
 
     // Switch player turn
@@ -190,6 +190,8 @@ function ScreenController() {
   const game = GameController();
   const boardContainerDiv = document.querySelector(".board-container");
   const playerTurnDiv = document.querySelector(".player-turn");
+  const closeModal = document.querySelector('.close-btn')
+  const displayResultText = document.querySelector('.display-results-text')
 
   const updateScreen = () => {
     // Clear the board
@@ -230,6 +232,7 @@ function ScreenController() {
     if (!selectedColumn) return;
 
     const isMarked = game.playRound(selectedRow, selectedColumn);
+    const activePlayer = game.getActivePlayer();
 
     // Check if a cell has already been marked
     if (!isMarked) {
@@ -237,8 +240,19 @@ function ScreenController() {
       return;
     }
 
+    if (isMarked === "win") {
+      alert(`${activePlayer.playerName} has won the game`);
+      return;
+    }
+
+    if (isMarked === "tie") {
+      alert("The game resulted in a draw");
+      return;
+    }
+
     updateScreen();
   }
+  
   boardContainerDiv.addEventListener("click", clickHandlerBoard);
 
   // Initial render
